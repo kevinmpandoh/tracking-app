@@ -53,13 +53,7 @@ const Header = ({ setSidebarOpen, sidebarOpen, user }) => {
                     <Link
                         className="block flex-shrink-0 lg:hidden"
                         href="/dahsboard"
-                    >
-                        <img
-                            src={"/images/logo/bps-sulut.png"}
-                            alt="Logo"
-                            width={200}
-                        />
-                    </Link>
+                    ></Link>
                 </div>
 
                 <div className="hidden sm:block"></div>

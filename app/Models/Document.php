@@ -9,7 +9,7 @@ class Document extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'document_number', 'created_by'];
+    protected $fillable = ['name', 'document_number', "type", "status", 'created_by', 'is_archived',];
 
     // Relasi ke tracking steps
     public function trackingSteps()

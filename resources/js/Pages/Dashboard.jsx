@@ -1,16 +1,25 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import CardData from "@/Components/CardData";
+import BarChart from "@/Components/BarChart";
+import { Col, Row } from "antd";
 
 import React, { useEffect } from "react";
 import axios from "axios";
 
-export default function Dashboard({ auth, documents, users }) {
-    console.log(document);
+export default function Dashboard({
+    auth,
+    documents,
+    users,
+    documentsInProgress,
+    documentsCompleted,
+    jenisDokumen,
+    tipeRole,
+}) {
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Dashboard" />
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
                 <CardData title="Total Berkas" total={documents}>
                     <svg
                         className="w-6 h-6 text-primary dark:text-white"
@@ -30,7 +39,32 @@ export default function Dashboard({ auth, documents, users }) {
                         />
                     </svg>
                 </CardData>
-                <CardData title="Total Pengajuan berkas" total={3}>
+                <CardData
+                    title="Total Dokumen dalam proses"
+                    total={documentsInProgress}
+                >
+                    <svg
+                        className="w-6 h-6 text-primary dark:text-white"
+                        aria-hidden="true"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={24}
+                        height={24}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7H5a2 2 0 0 0-2 2v4m5-6h8M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m0 0h3a2 2 0 0 1 2 2v4m0 0v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6m18 0s-4 2-9 2-9-2-9-2m9-2h.01"
+                        />
+                    </svg>
+                </CardData>
+                <CardData
+                    title="Total Dokumen selesai"
+                    total={documentsCompleted}
+                >
                     <svg
                         className="w-6 h-6 text-primary dark:text-white"
                         aria-hidden="true"
@@ -74,6 +108,30 @@ export default function Dashboard({ auth, documents, users }) {
                     </svg>
                 </CardData>
             </div>
+            <Row
+                gutter={16}
+                style={{ marginTop: 10, padding: 8 }}
+                justify="space-between"
+            >
+                <Col
+                    span={11}
+                    style={{
+                        backgroundColor: "#fff",
+                        padding: 10,
+                    }}
+                >
+                    <BarChart
+                        data={jenisDokumen}
+                        title="Total Dokumen per Jenis"
+                    />
+                </Col>
+                <Col span={11} style={{ backgroundColor: "#fff", padding: 10 }}>
+                    <BarChart
+                        data={tipeRole}
+                        title="Total Pegawai per Jabatan"
+                    />
+                </Col>
+            </Row>
         </AuthenticatedLayout>
     );
 }

@@ -13,7 +13,7 @@ const EditBerkasForm = ({ visible, onCancel, document }) => {
     }, [document, form]);
 
     const handleSubmit = (values) => {
-        router.patch(`/kelola-berkas/${document.id}`, values);
+        router.patch(`/kelola/${document.id}`, values);
         onCancel();
         form.resetFields();
     };
@@ -66,6 +66,27 @@ const EditBerkasForm = ({ visible, onCancel, document }) => {
                     {errors.name && (
                         <div className="text-red-500">{errors.name}</div>
                     )}
+                </Form.Item>
+
+                <Form.Item
+                    name="jenis_dokumen"
+                    label="Jenis Dokumen"
+                    rules={[
+                        {
+                            required: true,
+                            message: "Jenis Dokumen tidak boleh kosong.",
+                        },
+                    ]}
+                >
+                    <Select
+                        placeholder="Pilih Jenis Dokumen"
+                        className="border border-slate-400 rounded-md"
+                    >
+                        <Select.Option value="LS">LS</Select.Option>
+                        <Select.Option value="TU">TU</Select.Option>
+                        <Select.Option value="GU">GU</Select.Option>
+                        <Select.Option value="UP">UP</Select.Option>
+                    </Select>
                 </Form.Item>
             </Form>
         </Modal>

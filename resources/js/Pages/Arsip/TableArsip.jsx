@@ -1,7 +1,7 @@
 import React from "react";
-import { Empty } from "antd";
+import { Tooltip, Popconfirm, Empty } from "antd";
 
-const TableBerkas = ({ documents, user }) => {
+const TableArsip = ({ documents, user }) => {
     return (
         <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
             <div className="max-w-full overflow-x-auto">
@@ -26,10 +26,7 @@ const TableBerkas = ({ documents, user }) => {
                                 Status
                             </th>
                             <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
-                                Deskripsi Status Berkas
-                            </th>
-                            <th className="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
-                                Dibuat
+                                Tanggal Selesai
                             </th>
                         </tr>
                     </thead>
@@ -58,44 +55,21 @@ const TableBerkas = ({ documents, user }) => {
                                                 {data.type}
                                             </p>
                                         </td>
+
                                         <td className="border-b border-[#eee] py-5 px-4 capitalize dark:border-strokedark">
                                             <span
-                                                className={`${
-                                                    data.tracking_steps[0]
-                                                        ?.status === "completed"
-                                                        ? "bg-success"
-                                                        : data.tracking_steps[0]
-                                                              ?.status ===
-                                                          "rejected"
-                                                        ? "bg-danger"
-                                                        : data.tracking_steps[0]
-                                                              ?.status ===
-                                                          "inprogress"
-                                                        ? "bg-warning"
-                                                        : "bg-gray-2"
-                                                } text-white py-1 px-2 font-semibold rounded-full text-xs`}
+                                                className={`bg-success text-white py-1 px-2 font-semibold rounded-full text-xs`}
                                             >
-                                                {data.tracking_steps.length >
-                                                0 ? (
-                                                    data.tracking_steps[0]
-                                                        ?.status
-                                                ) : (
-                                                    <span className="text-black dark:text-white">
-                                                        New Entry
-                                                    </span>
-                                                )}
+                                                <span className="text-white dark:text-white">
+                                                    Selesai
+                                                </span>
                                             </span>
-                                        </td>
-                                        <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                            <p className="text-black dark:text-white">
-                                                {data.tracking_steps[0]?.title}
-                                            </p>
                                         </td>
                                         <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                             <p className="text-black dark:text-white">
                                                 {/* format nya hari bulan tangga */}
                                                 {new Date(
-                                                    data.created_at
+                                                    data.updated_at
                                                 ).toLocaleDateString("id-ID", {
                                                     day: "numeric",
                                                     month: "long",
@@ -123,4 +97,4 @@ const TableBerkas = ({ documents, user }) => {
     );
 };
 
-export default TableBerkas;
+export default TableArsip;

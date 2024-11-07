@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router, usePage } from "@inertiajs/react";
-import axios from "axios";
 import Breadcrumb from "@/Components/Breadcrumb";
 import SearchInput from "@/Components/SearchInput";
 import Pagination from "@/Components/Pagination";
-import Table from "@/Pages/Berkas/TableBerkas";
+import Table from "@/Pages/Kelola/TableKelolaBerkas";
 import AddBerkasForm from "./AddBerkasForm";
 import EditBerkasForm from "./EditBerkasForm";
 import Alert from "@/Components/Alert";
@@ -17,8 +16,9 @@ export default function KelolaBerkas({ auth, documents, search }) {
     const [currentDocument, setCurrentDocument] = useState(null);
 
     const handleStatusChange = (document) => {
+        let stepNumber = document.step_number;
         const documentId = document.id;
-        if (auth.user.role === "Petugas Loket") {
+        if (stepNumber === 1) {
             // Jika role adalah petugas_loket, tampilkan tombol Ajukan dan Batal
             Swal.fire({
                 title: "Ajukan Dokumen",
@@ -33,7 +33,7 @@ export default function KelolaBerkas({ auth, documents, search }) {
                     // Proses pengajuan untuk petugas loket
                     router.post(`/tracking-steps/${documentId}`, {
                         status: "completed",
-                        title: "Dokumen telah diajukan",
+                        title: "Dokumen diajukan oleh petugas loket",
                     });
                 }
             });
@@ -52,11 +52,64 @@ export default function KelolaBerkas({ auth, documents, search }) {
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Proses persetujuan dokumen
-                    router.post(`/tracking-steps/${documentId}`, {
-                        status: "completed",
-                        // disetujui oleh nama role
-                        title: `Dokumen telah disetujui oleh ${auth.user.role}`,
-                    });
+                    switch (stepNumber) {
+                        case 8:
+                            router
+                                .post(`/tracking-steps/${documentId}`, {
+                                    status: "completed",
+                                    title: `SP2D telah dicetak oleh ${auth.user.role}`,
+                                })
+                                .then(() => {
+                                    Swal.fire({
+                                        title: "Berhasil",
+                                        text: "Dokumen berhasil disetujui!",
+                                        icon: "success",
+                                    });
+                                });
+                            break;
+                        case 9:
+                            router
+                                .post(`/tracking-steps/${documentId}`, {
+                                    status: "completed",
+                                    title: `SP2D telah ditandatangani oleh ${auth.user.role}`,
+                                })
+                                .then(() => {
+                                    Swal.fire({
+                                        title: "Berhasil",
+                                        text: "Dokumen berhasil disetujui!",
+                                        icon: "success",
+                                    });
+                                });
+                            break;
+                        case 10:
+                            router
+                                .post(`/tracking-steps/${documentId}`, {
+                                    status: "completed",
+                                    title: `SP2D telah dikirim ke bank`,
+                                })
+                                .then(() => {
+                                    Swal.fire({
+                                        title: "Berhasil",
+                                        text: "Dokumen berhasil disetujui!",
+                                        icon: "success",
+                                    });
+                                });
+                            break;
+                        default:
+                            router
+                                .post(`/tracking-steps/${documentId}`, {
+                                    status: "completed",
+                                    title: `Dokumen telah disetujui oleh ${auth.user.role}`,
+                                })
+                                .then(() => {
+                                    Swal.fire({
+                                        title: "Berhasil",
+                                        text: "Dokumen berhasil disetujui!",
+                                        icon: "success",
+                                    });
+                                });
+                            break;
+                    }
                 } else if (result.isDenied) {
                     // Jika menekan tombol Tolak, minta alasan penolakan
                     Swal.fire({
@@ -73,16 +126,30 @@ export default function KelolaBerkas({ auth, documents, search }) {
                     }).then((result) => {
                         if (result.value) {
                             // Kirim alasan penolakan ke server
-                            router.post(`/tracking-steps/${documentId}`, {
-                                status: "rejected",
-                                title: "Dokumen ditolak",
-                                rejected_note: result.value, // Alasan dari pengguna
-                            });
+                            router
+                                .post(`/tracking-steps/${documentId}`, {
+                                    status: "rejected",
+                                    title:
+                                        "Dokumen ditolak oleh " +
+                                        auth.user.role,
+                                    rejected_note: result.value, // Alasan dari pengguna
+                                })
+                                .then(() => {
+                                    Swal.fire({
+                                        title: "Berhasil",
+                                        text: "Dokumen berhasil ditolak!",
+                                        icon: "success",
+                                    });
+                                });
                         }
                     });
                 }
             });
         }
+    };
+
+    const handleStepChange = (step) => {
+        setCurrentStep(step);
     };
 
     const { flash, errors } = usePage().props;
@@ -99,13 +166,13 @@ export default function KelolaBerkas({ auth, documents, search }) {
     };
 
     const handleDelete = (id) => {
-        router.delete(`/kelola-berkas/${id}`).then(() => {
+        router.delete(`/kelola/${id}`).then(() => {
             // Refresh the page or handle post-delete actions here
         });
     };
 
     const handleSearch = (query) => {
-        router.get("/kelola-berkas", { search: query }, { replace: true });
+        router.get("/kelola", { search: query }, { replace: true });
     };
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -140,6 +207,7 @@ export default function KelolaBerkas({ auth, documents, search }) {
                     onDelete={handleDelete}
                     onEditStatus={handleStatusChange}
                     user={auth.user}
+                    onEditStep={handleStepChange}
                 />
 
                 <Pagination

@@ -81,7 +81,13 @@ class TrackingStepController extends Controller
             ]);
         }
 
-        return redirect()->route('documents.index')->with('success', 'Dokumen berhasil dibuat.');
+        if ($currentStep->step_number == 10) {
+            $document->status = 'completed';
+            $document->is_archived = true;
+            $document->save();
+        }
+
+        return redirect()->route('documents.index')->with('success', 'Status dokumen berhasil diperbarui');
     }
 
     /**
@@ -100,6 +106,7 @@ class TrackingStepController extends Controller
             7 => 7, // BUD/Kuasa BUD
             8 => 2, // Peneliti Dokumen
             9 => 7, // BUD/Kuasa BUD
+            10 => 7, // Petugas Loket
         ];
 
         return $roles[$stepNumber] ?? null;
@@ -120,7 +127,7 @@ class TrackingStepController extends Controller
             7 => 'Berkas sedang diperiksa oleh BUD/Kuasa BUD',
             8 => 'Peneliti Dokumen sedang mencetak SP2D',
             9 => 'BUD/Kuasa BUD sedang menandatangani SP2D',
-            10 => 'Surat perintah pencairan dana (SP2D) telah dikirim ke bank',
+            10 => 'Surat perintah pencairan dana (SP2D) sedang dikirim ke bank',
         ];
 
         return $titles[$stepNumber] ?? 'Proses Tidak Diketahui';

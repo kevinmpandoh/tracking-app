@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArsipController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,7 @@ use App\Http\Controllers\TrackingStepController;
 use Illuminate\Http\Request;
 use App\Models\Document;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 
 Route::get('/', function (Request $request) {
@@ -47,21 +49,41 @@ Route::middleware('auth')->group(function () {
         $documents = Document::count();
         $users = User::count();
 
+        // Document yang statusnya inporgres
+        $documentsInProgress = Document::where('status', 'inprogress')->count();
+        $documentsCompleted = Document::where('status', 'completed')->count();
 
+        $jenisDokumen = DB::table('documents')
+            ->select('type as label', DB::raw('count(*) as value'))
+            ->groupBy('label')
+            ->orderBy('value')
+            ->get();
 
+        $tipeRole = DB::table('users')
+            ->select('roles.keterangan as label', DB::raw('count(*) as value'))
+            ->join('roles', 'users.role_id', '=', 'roles.id')
+            ->groupBy('label')
+            ->orderBy('value')
+            ->get();
 
-        return Inertia::render('Dashboard', ['documents' => $documents, 'users' => $users]);
+        return Inertia::render('Dashboard', [
+            'documents' => $documents,
+            'documentsInProgress' => $documentsInProgress,
+            'documentsCompleted' => $documentsCompleted,
+            'users' => $users,
+            'jenisDokumen' => $jenisDokumen,
+            'tipeRole' => $tipeRole
+        ]);
     })->name('dashboard');
 
+    //  Route untuk menampilkan semua berkas
+    Route::get("/berkas", [DocumentController::class, "berkas"])->name('documents.berkas');
 
-    Route::get('/kelola-berkas', function () {
-        return Inertia::render("KelolaBerkas");
-    });
 
-    Route::get('/kelola-berkas', [DocumentController::class, 'index'])->name('documents.index');
-    Route::post('/kelola-berkas', [DocumentController::class, 'store'])->name('documents.store');
-    Route::patch('/kelola-berkas/{document}', [DocumentController::class, 'update'])->name('documents.update');
-    Route::delete('/kelola-berkas/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+    Route::get('/kelola', [DocumentController::class, 'index'])->name('documents.index');
+    Route::post('/kelola', [DocumentController::class, 'store'])->name('documents.store');
+    Route::patch('/kelola/{document}', [DocumentController::class, 'update'])->name('documents.update');
+    Route::delete('/kelola/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
 
     // Tracking Step
     Route::post('/tracking-steps/{document}', [TrackingStepController::class, 'updateStep'])->name('tracking-steps.update');
@@ -76,11 +98,15 @@ Route::middleware('auth')->group(function () {
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
+    // Arsip
+    Route::get("/arsip", [ArsipController::class, 'index']);
+
+
     // Role
-    Route::get('/role', [RoleController::class, 'index'])->name('role.index');
-    Route::post('/role', [RoleController::class, 'store'])->name('role.store');
-    Route::put('/role/{role}', [RoleController::class, 'update'])->name('role.update');
-    Route::delete('/role/{role}', [RoleController::class, 'destroy'])->name('role.destroy');
+    // Route::get('/role', [RoleController::class, 'index'])->name('role.index');
+    // Route::post('/role', [RoleController::class, 'store'])->name('role.store');
+    // Route::put('/role/{role}', [RoleController::class, 'update'])->name('role.update');
+    // Route::delete('/role/{role}', [RoleController::class, 'destroy'])->name('role.destroy');
 });
 
 

@@ -12,8 +12,6 @@ const AddUserForm = ({ visible, onCancel, roles }) => {
         onCancel();
     };
 
-    console.log("Error", errors);
-
     return (
         <Modal
             title="Tambah Users"

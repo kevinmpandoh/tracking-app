@@ -18,10 +18,10 @@ class UserController extends Controller
             ->join('roles', 'users.role_id', '=', 'roles.id')
             ->where('users.name', 'like', "%{$search}%")
             ->orWhere('users.username', 'like', "%{$search}%")
-            ->paginate(20)
+            ->paginate(5)
             ->appends(['search' => $search]);
 
-        return Inertia::render('Users/KelolaUser', [
+        return Inertia::render('Users/User', [
             'users' => $users,
             'search' => $search,
             'roles' => Role::all()
@@ -41,6 +41,8 @@ class UserController extends Controller
         ]);
 
 
+
+
         $validatedData['password'] = bcrypt($validatedData['password']);
 
         User::create($validatedData);
@@ -50,6 +52,7 @@ class UserController extends Controller
 
     public function update(Request $request, User $user)
     {
+
         $validatedData = $request->validate([
             'name' => ['required'],
             'username' => ['required'],
@@ -68,6 +71,8 @@ class UserController extends Controller
                 'username.unique' => 'Username sudah digunakan',
             ]);
         }
+
+
 
         $user->update($validatedData);
 

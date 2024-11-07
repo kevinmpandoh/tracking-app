@@ -7,13 +7,10 @@ const AddUserForm = ({ visible, onCancel }) => {
     const { errors } = usePage().props;
 
     const handleSubmit = (values) => {
-        router.post("/kelola-berkas", values);
+        router.post("/kelola", values);
         form.resetFields();
         onCancel();
     };
-
-    console.log("Error", errors);
-
     return (
         <Modal
             title="Tambah Berkas"
